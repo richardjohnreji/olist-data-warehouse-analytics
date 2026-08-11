@@ -4,7 +4,7 @@ An end-to-end e-commerce analytics project built around the Olist Brazilian E-Co
 
 The project demonstrates the complete journey from **business understanding and raw data ingestion to data warehousing, dimensional modeling, Power BI semantic modeling, DAX, and business analytics**.
 
-The goal is not simply to create a dashboard. The goal is to build an analytics solution that transforms raw business data into reliable information that can support business decision-making.
+The goal is to build an analytics solution that transforms raw business data into reliable information that can support business decision-making.
 
 ---
 
