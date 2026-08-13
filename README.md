@@ -39,8 +39,6 @@ This project takes that raw operational data and builds a structured analytical 
 * Customer behavior
 * Product performance
 * Seller performance
-* Freight costs
-* Customer experience
 * Operational efficiency
 * Time-based sales trends
 
