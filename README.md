@@ -1,18 +1,20 @@
 # Olist Data Warehouse & Analytics
 
-An end-to-end e-commerce analytics project built around the Olist Brazilian E-Commerce dataset.
+An end-to-end Data Warehouse and Business Intelligence project built using the Brazilian E-Commerce Public Dataset by Olist.
 
-The project demonstrates the complete journey from **business understanding and raw data ingestion to data warehousing, dimensional modeling, Power BI semantic modeling, DAX, and business analytics**.
+This project demonstrates the journey from raw operational data to an analytics-ready data warehouse and Power BI reporting solution.
 
-The goal is to build an analytics solution that transforms raw business data into reliable information that can support business decision-making.
+The project covers:
+
+**Business Understanding → Data Warehouse Design → Python ETL → SQL Transformations → Data Quality Handling → Dimensional Modeling → Power BI Semantic Modeling → DAX → Business Analytics**
 
 ---
 
 ## Project Overview
 
-Olist is an e-commerce marketplace that connects sellers with customers.
+Olist is a Brazilian e-commerce marketplace that connects customers, sellers, products, payments, deliveries, and customer reviews.
 
-The business process can be simplified as:
+A simplified version of the business process is:
 
 ```text
 Customer
@@ -30,36 +32,31 @@ Shipping & Delivery
 Customer Review
 ```
 
-Each stage generates data.
+Each stage of this process generates operational data.
 
-This project takes that raw operational data and builds a structured analytical environment that can be used to answer questions about:
+The goal of this project is to transform that raw data into a structured analytical environment that supports reliable reporting and business analysis.
 
-* Business growth
-* Sales performance
-* Customer behavior
-* Product performance
-* Seller performance
-* Operational efficiency
-* Time-based sales trends
+The final solution separates the raw source data from the analytics layer and follows a layered Data Warehouse architecture.
 
 ---
 
-## Business Objective
+# Business Objective
 
-The project is designed to help Olist analyze its business performance and identify insights that can support better decision-making.
+The objective is to build an analytics solution that helps analyze Olist's business performance and supports data-driven decision-making.
 
-The analysis focuses on understanding:
+The project focuses on questions related to:
 
-* How the business is generating revenue
-* Which products and categories drive sales
-* Which sellers perform well
-* How customer behavior changes over time
-* What affects customer satisfaction
-* Where operational bottlenecks may exist
-* How sales performance changes over time
-* Which areas may require business attention or improvement
+* Sales performance
+* Business growth
+* Product and category performance
+* Customer behavior
+* Seller performance
+* Freight performance
+* Time-based trends
+* Regional analysis
+* Operational performance
 
-The project follows the principle:
+The project follows a business-first analytical approach:
 
 ```text
 Business Objective
@@ -68,56 +65,58 @@ Business Questions
        ↓
 KPIs
        ↓
+Data Model
+       ↓
 Analysis
        ↓
 Dashboard
        ↓
-Business Decision
+Business Insights
 ```
 
 ---
 
-## Business Questions
+# Business Questions
 
-The project is designed around five major business themes.
+The project is structured around several major analytical themes.
 
-### 1. Business Growth
+## 1. Business Growth
 
-* Is Olist growing?
-* Which categories drive revenue?
-* Which regions underperform?
-* Where is revenue being lost?
+* How is sales performance changing over time?
+* Which categories contribute the most to sales?
+* How does performance vary across different periods?
+* Where are the strongest and weakest areas of the business?
 
-### 2. Customer Experience
+## 2. Sales Performance
 
-* What affects customer satisfaction?
-* Which sellers receive poor reviews?
-* Which products generate complaints?
-* How can customer satisfaction improve?
+* What are total sales and total orders?
+* Which product categories generate the highest sales?
+* How does sales performance change over time?
+* What is the average order value?
 
-### 3. Operational Efficiency
+## 3. Customer Analysis
 
-* Where are operational bottlenecks?
-* How efficient is delivery?
-* What causes delays?
+* How many customers generated sales?
+* How should unique customers be distinguished from customer records?
+* How can customer activity be analyzed through the warehouse model?
 
-### 4. Sales Performance
+## 4. Freight Analysis
 
-* How are sales changing over time?
-* Which products perform best?
-* Which sellers generate the most revenue?
+* How much freight cost is associated with sales?
+* What is the average freight cost per order?
+* What percentage of sales is represented by freight?
 
-### 5. Strategic Decision Support
+## 5. Strategic Decision Support
 
-* Which areas deserve investment?
-* Which problems should be prioritized?
-* Which opportunities have the biggest business impact?
+* Which areas deserve additional business attention?
+* Which categories contribute most significantly to sales?
+* How can KPIs and trends support management decisions?
 
 ---
 
-# Architecture
+# Solution Architecture
 
-The project follows a layered Data Warehouse architecture:
+The project follows a layered Data Warehouse architecture.
 
 ```text
                     Olist Source Data
@@ -125,13 +124,13 @@ The project follows a layered Data Warehouse architecture:
                            ▼
                     ┌─────────────┐
                     │   BRONZE    │
-                    │ Raw Data    │
+                    │  Raw Data   │
                     └──────┬──────┘
                            │
                            ▼
                     ┌─────────────┐
                     │   SILVER    │
-                    │ Cleaned &   │
+                    │   Cleaned   │
                     │ Standardized│
                     └──────┬──────┘
                            │
@@ -153,7 +152,20 @@ The project follows a layered Data Warehouse architecture:
                     Business Analytics
 ```
 
-The Gold layer acts as the business-facing analytical layer consumed by Power BI. Bronze and Silver tables are not connected directly to the Power BI model.
+### Architecture Principle
+
+Each layer has a specific responsibility:
+
+| Layer    | Purpose                                                      |
+| -------- | ------------------------------------------------------------ |
+| Bronze   | Store source data in raw form                                |
+| Silver   | Clean, standardize, validate, and transform data             |
+| Gold     | Provide an analytics-ready dimensional model                 |
+| Power BI | Create the semantic model, measures, visuals, and dashboards |
+
+Bronze and Silver tables are not used directly for reporting.
+
+Power BI consumes the analytics-ready Gold layer.
 
 ---
 
@@ -161,11 +173,9 @@ The Gold layer acts as the business-facing analytical layer consumed by Power BI
 
 ## Bronze Layer
 
-The Bronze layer stores the source data in its raw form.
+The Bronze layer stores the Olist source data with minimal transformation.
 
-The Python ETL pipeline loads the Olist CSV files into SQL Server.
-
-The source data includes entities such as:
+The source data includes:
 
 * Customers
 * Geolocation
@@ -177,50 +187,67 @@ The source data includes entities such as:
 * Order payments
 * Order reviews
 
-The Bronze loading process was implemented using Python and SQL Server.
+The ingestion process was implemented using Python and SQL Server.
+
+The purpose of the Bronze layer is to preserve the source data inside the Data Warehouse environment before business transformations are applied.
 
 ---
 
 ## Silver Layer
 
-The Silver layer transforms Bronze data into cleaner and standardized business data.
+The Silver layer transforms raw Bronze data into cleaner and more standardized data.
 
-Transformations include:
+The transformation process includes:
 
-* Text cleansing
-* Standardization
+* Data cleansing
+* Text standardization
 * Data validation
 * Deduplication
-* Handling data-quality problems
 * Foreign-key validation
+* Handling data-quality issues
 * Business-oriented transformations
 
-A significant data-quality issue was discovered in the geolocation data.
+### Data Quality Example: Geolocation
 
-Duplicate records were caused by differences in city spelling and floating-point coordinate precision. The solution included coordinate normalization and `ROW_NUMBER()` based deduplication.
+A significant data-quality issue was identified in the geolocation data.
 
-Product-category foreign-key issues were also investigated and handled during the Silver transformation process.
+Duplicate records existed because of factors such as:
+
+* Variations in city spelling
+* Floating-point coordinate precision differences
+
+The transformation process included coordinate normalization and `ROW_NUMBER()`-based deduplication.
+
+### Data Quality Example: Product Categories
+
+Product category relationships and foreign-key issues were investigated during the transformation process.
+
+These issues were handled as part of the Silver-layer data preparation before building the analytical model.
+
+This reflects an important real-world engineering principle:
+
+> Data engineering is not only about loading data. It also involves discovering, investigating, and resolving data-quality problems.
 
 ---
 
-## Gold Layer
+# Gold Layer
 
-The Gold layer provides the analytical data model used by reporting and BI tools.
+The Gold layer provides the analytics-ready model used by Power BI.
 
-The project uses a dimensional modeling approach with:
+The project uses dimensional modeling and follows a Star Schema design.
 
-### Dimensions
+## Dimensions
 
 * `gold.dim_customers`
 * `gold.dim_products`
 * `gold.dim_sellers`
 * `gold.dim_dates`
 
-### Fact
+## Fact Table
 
 * `gold.fact_sales`
 
-The model is designed around a Star Schema.
+The model can be represented as:
 
 ```text
                    dim_dates
@@ -233,11 +260,80 @@ dim_customers ───► fact_sales ◄─── dim_products
                    dim_sellers
 ```
 
-The fact table contains the measurable business events, while dimensions provide the descriptive context used to analyze those events.
+The fact table stores measurable business events, while dimension tables provide the descriptive context required to analyze those events.
 
 ---
 
-# Power BI
+# Dimensional Modeling
+
+The Gold layer follows dimensional modeling principles.
+
+## Fact Table
+
+`gold.fact_sales` represents the measurable sales activity used for analysis.
+
+Examples of analytical measures include:
+
+* Product sales
+* Freight amounts
+* Order-related metrics
+
+## Dimension Tables
+
+The dimensions provide context for analyzing the facts.
+
+### Customer Dimension
+
+Used to analyze customer-related activity.
+
+### Product Dimension
+
+Used to analyze products and product categories.
+
+### Seller Dimension
+
+Used to analyze seller-related performance.
+
+### Date Dimension
+
+Used to analyze business performance across time.
+
+---
+
+# Customer Identifier Design
+
+An important modeling concept in this project is the difference between a technical customer identifier and the actual unique customer identifier.
+
+### `customer_id`
+
+Represents an individual customer record and is used as the appropriate relationship key in the warehouse model.
+
+### `customer_unique_id`
+
+Represents the actual unique customer.
+
+A single real customer can appear in multiple customer records.
+
+This means:
+
+```text
+One Real Customer
+       │
+       ├── Customer Record 1
+       ├── Customer Record 2
+       └── Customer Record 3
+```
+
+The warehouse model therefore preserves both concepts:
+
+* The appropriate technical identifier for relationships
+* The unique customer identifier for customer-level analysis
+
+This distinction prevents incorrect customer counts and demonstrates the importance of understanding business keys versus relationship keys.
+
+---
+
+# Power BI Semantic Model
 
 The Gold layer is imported into Power BI to create the semantic model.
 
@@ -251,18 +347,17 @@ gold.dim_dates
 gold.fact_sales
 ```
 
-The Power BI model uses:
+The semantic model follows Star Schema principles and uses:
 
-* Star Schema
-* One-to-Many relationships
+* One-to-many relationships
 * Active relationships
 * Single-direction filtering
-* Technical keys for relationships
+* Technical relationship keys
 * Hidden technical columns where appropriate
-* A dedicated Date Table
+* A dedicated Date table
 * Chronological month sorting
 
-The date table contains fields including:
+The Date table contains fields including:
 
 * Date
 * Year
@@ -274,13 +369,15 @@ The date table contains fields including:
 * Weekday
 * Is Weekend
 
-The Date Table has been marked appropriately for time-intelligence analysis.
+The Date table is configured for time-intelligence analysis.
 
 ---
 
-# DAX & Semantic Modeling
+# DAX and KPI Development
 
-Reusable business measures are organized in a dedicated Power BI Measure Table using Display Folders.
+Business measures are organized in a dedicated Power BI Measure Table using Display Folders.
+
+This improves model organization and separates reusable business logic from the underlying tables.
 
 ## Sales KPIs
 
@@ -301,35 +398,48 @@ Reusable business measures are organized in a dedicated Power BI Measure Table u
 
 ## Time Intelligence
 
-Time Intelligence is currently the next stage of the Power BI development.
+The Power BI model also includes time-based analysis using the Date dimension.
 
-Planned analysis includes:
+The project has progressed beyond basic KPI development into sales trend and growth analysis.
 
-* YTD Sales
-* Monthly YoY
-* YTD YoY
-* Growth analysis
-* Trend analysis
+The analytical work includes concepts such as:
 
-The project emphasizes understanding the business meaning and filter context behind DAX rather than simply memorizing formulas.
+* Year-to-date sales
+* Year-over-year comparison
+* Monthly sales trends
+* Sales growth analysis
+
+The focus throughout the project has been on understanding:
+
+* Filter context
+* Filter propagation
+* Date context
+* Measure reusability
+* Business meaning behind DAX calculations
+
+rather than simply memorizing formulas.
 
 ---
 
-# Current KPI Checkpoints
+# KPI Validation Checkpoints
 
-Current Power BI results include:
+The following results were used as validation checkpoints during Power BI development.
 
-| KPI                       |   Result |
-| ------------------------- | -------: |
-| Total Sales               | ≈ 15.84M |
-| Total Orders              |    ≈ 99K |
-| Total Customers           |    ≈ 96K |
-| Average Order Value       |   160.58 |
-| Total Freight Cost        |    2.25M |
-| Average Freight per Order |    22.82 |
-| Freight % of Sales        |    14.2% |
+| KPI                       |            Result |
+| ------------------------- | ----------------: |
+| Total Sales               |            15.84M |
+| Total Orders              | Approximately 99K |
+| Total Customers           | Approximately 96K |
+| Average Order Value       |            160.58 |
+| Total Freight Cost        |             2.25M |
+| Average Freight per Order |             22.82 |
+| Freight % of Sales        |             14.2% |
 
-Example filtered result for `furniture_bedroom`:
+These values were validated against the analytical model during development.
+
+### Example Filter Validation
+
+For the `furniture_bedroom` category:
 
 | KPI                  | Result |
 | -------------------- | -----: |
@@ -338,45 +448,45 @@ Example filtered result for `furniture_bedroom`:
 | Customers With Sales |     91 |
 | Average Order Value  | 259.59 |
 
-These values serve as validation checkpoints during Power BI development.
+These filtered results were used to validate that relationships, filter propagation, and DAX measures behaved correctly.
 
 ---
 
-# Key Data Modeling Concepts
+# Analytics and Dashboard Development
 
-One of the important modeling decisions in the project is the distinction between technical identifiers and business identifiers.
+The Power BI analytics layer includes KPI and performance analysis built on top of the Gold-layer Star Schema.
 
-For example:
+The dashboard development process focuses on presenting business information in a structured way rather than simply displaying individual charts.
 
-### `customer_id`
+Analytical areas developed in the project include:
 
-Represents an individual customer record and is used for warehouse relationships.
+* Sales KPIs
+* Sales performance
+* Category performance
+* Time-based analysis
+* Year-to-date analysis
+* Year-over-year growth
+* Freight analysis
 
-### `customer_unique_id`
-
-Represents the actual unique customer and can appear across multiple customer records.
-
-This distinction is important because one real customer may have multiple customer records associated with different orders.
-
-The project therefore uses the appropriate relationship key while retaining `customer_unique_id` for customer-centric analysis.
+The dashboards are designed around business questions and KPI interpretation.
 
 ---
 
 # Technology Stack
 
-| Area            | Technology                         |
-| --------------- | ---------------------------------- |
-| Source Data     | Olist Brazilian E-Commerce Dataset |
-| Programming     | Python                             |
-| Database        | Microsoft SQL Server               |
-| ETL             | Python                             |
-| Transformation  | SQL                                |
-| Data Warehouse  | SQL Server                         |
-| Data Modeling   | Dimensional Modeling / Star Schema |
-| BI              | Microsoft Power BI                 |
-| Analytics       | DAX                                |
-| Documentation   | Markdown                           |
-| Version Control | Git / GitHub                       |
+| Area                  | Technology                         |
+| --------------------- | ---------------------------------- |
+| Source Data           | Olist Brazilian E-Commerce Dataset |
+| Programming           | Python                             |
+| Database              | Microsoft SQL Server               |
+| ETL                   | Python                             |
+| Data Transformation   | SQL                                |
+| Data Warehouse        | SQL Server                         |
+| Data Modeling         | Dimensional Modeling / Star Schema |
+| Business Intelligence | Microsoft Power BI                 |
+| Analytics             | DAX                                |
+| Documentation         | Markdown                           |
+| Version Control       | Git / GitHub                       |
 
 ---
 
@@ -402,23 +512,25 @@ olist-data-warehouse-analytics/
 ├── README.md
 ├── .gitignore
 ├── LICENSE
-├── dataset
+├── dataset/
 └── requirements.txt
 ```
+
+> The exact repository structure may evolve as additional documentation, validation scripts, and dashboard assets are added.
 
 ---
 
 # Project Phases
 
-| Phase   | Area                                      | Status      |
-| ------- | ----------------------------------------- | ----------- |
-| Phase 1 | Business Understanding & Project Planning | Completed   |
-| Phase 2 | Database Design                           | Completed   |
-| Phase 3 | Bronze Layer                              | Completed   |
-| Phase 4 | Python ETL                                | Completed   |
-| Phase 5 | Silver Layer                              | Completed   |
-| Phase 6 | Gold Layer                                | Completed   |
-| Phase 7 | Power BI Analytics                        | In Progress |
+| Phase   | Area                                       | Status    |
+| ------- | ------------------------------------------ | --------- |
+| Phase 1 | Business Understanding & Project Planning  | Completed |
+| Phase 2 | Database Design                            | Completed |
+| Phase 3 | Bronze Layer Design                        | Completed |
+| Phase 4 | Python ETL                                 | Completed |
+| Phase 5 | Silver Layer                               | Completed |
+| Phase 6 | Gold Layer & Dimensional Modeling          | Completed |
+| Phase 7 | Power BI Analytics & Dashboard Development | Completed |
 
 ---
 
@@ -427,107 +539,193 @@ olist-data-warehouse-analytics/
 ## Data Engineering
 
 * Python ETL development
-* CSV ingestion
+* CSV data ingestion
 * SQL Server integration
-* Bronze layer design
-* ETL logging
-* Data validation
+* Bronze-layer architecture
+* Data loading
+* ETL execution
 * Error investigation
-* Pipeline execution
+* Data validation
 
 ## Analytics Engineering
 
 * Data cleansing
-* Standardization
-* Data quality handling
+* Data standardization
+* Data-quality investigation
+* Deduplication
+* Foreign-key validation
 * Dimensional modeling
 * Fact and dimension design
-* Surrogate/technical keys
-* Star Schema
-* Gold analytical layer
+* Technical and business key analysis
+* Star Schema design
+* Analytics-ready Gold layer development
 
-## Data Analytics / BI
+## Business Intelligence and Analytics
 
 * Power BI
 * Semantic modeling
+* Relationship design
 * DAX
 * KPI development
+* Measure organization
 * Filter context
 * Filter propagation
-* Time Intelligence
-* Sales analysis
-* Customer analysis
+* Time intelligence
+* Year-to-date analysis
+* Year-over-year analysis
+* Sales performance analysis
+* Category analysis
 * Freight analysis
-* Business question development
+* Dashboard development
 
 ---
 
-# Data Quality & Engineering Lessons
+# Key Engineering Lessons
 
-The project intentionally documents real data problems encountered during implementation rather than assuming that source data is already clean.
+This project involved working through practical data and modeling problems rather than assuming that the source data was already analytics-ready.
 
-Examples include:
+Important lessons included:
 
-* Duplicate geolocation records
-* Floating-point precision differences
-* City spelling variations
-* Missing product category translations
-* Foreign-key validation issues
-* Distinguishing business identifiers from relationship keys
+### 1. Raw Data Is Not Reporting Data
 
-These issues demonstrate an important practical principle:
+Operational source tables are designed to support transactions.
 
-> Real-world data engineering involves discovering and solving data-quality problems, not simply loading tables.
+Analytical models are designed to answer business questions.
+
+A transformation layer is required between them.
+
+### 2. Data Quality Must Be Investigated
+
+Duplicate records, inconsistent text, precision differences, and missing relationships can affect downstream analysis.
+
+These issues must be identified and handled before building analytical models.
+
+### 3. Relationship Keys Matter
+
+A technical identifier and a business identifier can represent different concepts.
+
+Choosing the wrong key can produce incorrect results.
+
+### 4. Star Schemas Simplify Analytics
+
+Separating facts from dimensions makes the model easier to understand and improves analytical flexibility.
+
+### 5. DAX Depends on Context
+
+Measures do not simply calculate fixed values.
+
+Their results depend on the filters and relationships active in the report.
 
 ---
 
-# Business Analytics Roadmap
+# Portfolio Value
 
-The next stages of the project will expand the Power BI analytical layer.
+This project demonstrates more than dashboard creation.
 
-### Time Intelligence
+It shows an end-to-end analytical workflow:
 
-* YTD Sales
-* Monthly YoY
-* YTD YoY
-* Growth trends
+```text
+Raw Data
+   ↓
+Data Ingestion
+   ↓
+Data Cleaning & Validation
+   ↓
+Data Warehouse
+   ↓
+Dimensional Modeling
+   ↓
+Power BI Semantic Model
+   ↓
+DAX Measures
+   ↓
+Business Analysis
+   ↓
+Dashboard
+```
 
-### Sales Analytics
+The project demonstrates skills across multiple areas:
 
-* Category performance
-* Product performance
-* Seller performance
-* Regional performance
+* Data Engineering
+* SQL Development
+* ETL
+* Data Warehousing
+* Data Quality
+* Dimensional Modeling
+* Analytics Engineering
+* Power BI
+* DAX
+* Business Analysis
+* Data Visualization
+* Git and GitHub documentation
 
-### Customer Analytics
+---
 
-* Customer behavior
-* Customer purchasing patterns
-* Customer retention-related analysis
+# Project Status
 
-### Operational Analytics
+**Status: Core Data Warehouse and Power BI Analytics Development Completed**
 
-* Delivery performance
-* Freight analysis
-* Operational bottlenecks
+The project currently includes:
 
-### Customer Experience
+* Bronze Data Layer
+* Python-based data ingestion
+* Silver data transformations
+* Data-quality handling
+* Gold analytical layer
+* Star Schema
+* Power BI semantic model
+* DAX KPI development
+* KPI validation
+* Time-based analysis
+* Power BI dashboard development
 
-* Review performance
-* Seller satisfaction
-* Product/customer experience relationships
+Further enhancements can be added to extend the analytical scope.
 
-### Executive Reporting
+---
 
-The final objective is to convert the analytical model into portfolio-quality Power BI reports that support business decision-making.
+# Future Improvements
+
+Potential future improvements include:
+
+* Expanded customer segmentation
+* Customer retention and repeat-purchase analysis
+* Delivery performance analysis
+* Customer review analysis
+* Additional seller-performance analysis
+* Automated pipeline orchestration
+* Expanded automated data-quality testing
+* Additional Gold-layer business views
+* Advanced DAX calculations
+* Additional executive dashboards
+* Enhanced documentation and data lineage
+
+---
+
+# Dataset
+
+The project uses the Brazilian E-Commerce Public Dataset by Olist.
+
+The dataset contains information related to:
+
+* Customers
+* Orders
+* Order items
+* Payments
+* Products
+* Sellers
+* Geolocation
+* Product categories
+* Customer reviews
+
+The original dataset is publicly available on Kaggle.
+
+[Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
 ---
 
 # Project Philosophy
 
-This project follows a business-first approach.
-
-The process is:
+The project follows a business-first approach.
 
 ```text
 Understand the Business
@@ -542,56 +740,25 @@ Create the Analytical Model
         ↓
 Build the Semantic Model
         ↓
-Create KPIs
+Create Business Measures
         ↓
-Analyze the Business
+Analyze Performance
         ↓
 Communicate Insights
 ```
 
-The central lesson of the project is:
+The central principle behind this project is:
 
-> Technology supports business decisions. Business problems drive the technology.
-
----
-
-# Project Status
-
-**Current Status: Phase 7 — Power BI Analytics**
-
-The data warehouse and Gold analytical layer are complete.
-
-The Power BI semantic model and core DAX KPI measures are also established.
-
-The project is currently progressing through Time Intelligence and advanced business analytics before final report/dashboard development.
+> Technology is used to support business decisions. The business problem determines how the technology should be applied.
 
 ---
 
-# Future Improvements
+# About This Project
 
-Potential future improvements include:
+This project was developed as a portfolio project focused on understanding how an end-to-end analytics solution is designed and implemented.
 
-* Additional business-focused Gold views
-* Expanded data-quality testing
-* Automated pipeline orchestration
-* More advanced DAX
-* Customer segmentation
-* Operational performance analysis
-* Advanced Power BI dashboards
-* Executive reporting
-* Additional documentation
-* Automated testing and validation
+Rather than focusing on a single tool, the project demonstrates the complete progression from raw data to business analysis:
 
----
+**Raw Data → Data Engineering → Data Warehouse → Analytics Engineering → Semantic Modeling → DAX → Business Intelligence**
 
-## About the Project
-
-This project was developed as a practical learning and portfolio project to understand how an end-to-end analytics solution is designed and implemented.
-
-It demonstrates the progression from:
-
-**Raw Data → Data Engineering → Data Warehouse → Analytics Engineering → BI Modeling → DAX → Business Analytics**
-
-rather than focusing on a single technology or dashboard.
-
----
+The objective was to build and understand the full analytics workflow, including the technical decisions, data-quality issues, modeling concepts, and business reasoning involved in creating a reliable analytical solution.
